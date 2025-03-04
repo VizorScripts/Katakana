@@ -1,7 +1,7 @@
 # Katakana (スカイダウンローダー)
 **Video Downloader & Converter for iOS**
 
-Katakana, Japanese for "Sky Downloader", is a production-ready iOS framework for background HLS stream downloads and FFmpeg-based MP4 conversion. It features:
+Katakana is a production-ready iOS framework for background HLS stream downloads and FFmpeg-based MP4 conversion. It features:
 
 - **Resumable Downloads:** Efficiently continue downloads in the background or even after app termination.
 - **Robust File Management:** Automatically handle temporary and final files, ensuring storage remains uncluttered.
