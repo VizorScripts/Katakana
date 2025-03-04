@@ -17,7 +17,7 @@ Built with URLSession, MobileFFmpeg, and Combine, Katakana is your robust soluti
 
 
 
-                                Features
+> **Features**
 ---------------------------------------------------------------------------
 1. **Background Downloads**
 Downloads continue even when the app is in the background or terminated.
@@ -78,9 +78,7 @@ ___________________________________________________________________________
 
 
 
-
-
-                                Installation
+> **Installation**
 ---------------------------------------------------------------------------
 **1. Add FFmpeg Framework**
 - Download FFmpeg-iOS-Lam.
@@ -92,9 +90,8 @@ ___________________________________________________________________________
 **2. Add Header Search Paths**
 - Add the following to your project's header search paths:
 
-#####
-    $(PROJECT_DIR)/FFmpeg.xcframework/ios-arm64/Headers
-#####
+      $(PROJECT_DIR)/FFmpeg.xcframework/ios-arm64/Headers
+
 
 
 
@@ -108,13 +105,11 @@ ___________________________________________________________________________
 **4. Update Info.plist**
 - Add the following to your Info.plist:
 
-#####
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-</dict>
-#####
+      <key>NSAppTransportSecurity</key>
+      <dict>
+          <key>NSAllowsArbitraryLoads</key>
+          <true/>
+      </dict>
 
 
 ___________________________________________________________________________
@@ -129,50 +124,45 @@ ___________________________________________________________________________
 
 
 
-                                Usage
+> Usage
 ---------------------------------------------------------------------------
 
 
 **1. Start a Download**
 
-#####
-let url = URL(string: "https://example.com/stream.m3u8")!
-VideoDownloader.shared.downloadHLSStream(url: url) { result in
-    switch result {
-    case .success(let convertedURL):
-        print("Video saved at: \(convertedURL)")
-    case .failure(let error):
-        print("Download failed: \(error.localizedDescription)")
+
+    let url = URL(string: "https://example.com/stream.m3u8")!
+    VideoDownloader.shared.downloadHLSStream(url: url) { result in
+        switch result {
+        case .success(let convertedURL):
+            print("Video saved at: \(convertedURL)")
+        case .failure(let error):
+            print("Download failed: \(error.localizedDescription)")
+        }
     }
-}
-#####
-
-
-
-
 
 
 
 **2. Track Progress**
 - Use Combine to track download progress:
 
-#####
-@Published var downloadProgress: Double = 0
 
-func startDownload(url: URL) {
-    let task = VideoDownloader.shared.downloadHLSStream(url: url) { result in
-        // Handle result
-    }
+      @Published var downloadProgress: Double = 0
+
+      func startDownload(url: URL) {
+          let task = VideoDownloader.shared.downloadHLSStream(url: url) { result in
+              // Handle result
+          }
     
-    NotificationCenter.default.publisher(for: .init("DownloadProgressNotification"))
-        .compactMap { $0.userInfo?["progress"] as? Double }
-        .receive(on: DispatchQueue.main)
-        .sink { [weak self] progress in
-            self?.downloadProgress = progress
-        }
-        .store(in: &cancellables)
-}
-#####
+          NotificationCenter.default.publisher(for: .init("DownloadProgressNotification"))
+              .compactMap { $0.userInfo?["progress"] as? Double }
+              .receive(on: DispatchQueue.main)
+              .sink { [weak self] progress in
+                  self?.downloadProgress = progress
+              }
+              .store(in: &cancellables)
+      }
+
 
 
 
@@ -182,15 +172,13 @@ func startDownload(url: URL) {
 
 **3. Save to Photo Library**
    
-#####
-PHPhotoLibrary.shared().performChanges {
-    PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: convertedURL)
-} completionHandler: { success, error in
-    if !success {
-        print("Failed to save video: \(error?.localizedDescription ?? "")")
+    PHPhotoLibrary.shared().performChanges {
+        PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: convertedURL)
+    } completionHandler: { success, error in
+        if !success {
+            print("Failed to save video: \(error?.localizedDescription ?? "")")
+        }
     }
-}
-#####
 
 ___________________________________________________________________________
 ___________________________________________________________________________
@@ -199,29 +187,24 @@ ___________________________________________________________________________
 
 
 
-
-
-
-
-
-                                Customization
+> Customization
 ---------------------------------------------------------------------------
 **1. Change FFmpeg Encoding Parameters**
 Modify the FFmpeg command in FFmpegProcessor.swift:
 
 
-#####
-let command = """
--i \(inputURL.path) \
--c:v libx264 \
--preset fast \
--crf 23 \
--c:a aac \
--b:a 128k \
--movflags +faststart \
--y \(outputURL.path)
-"""
-#####
+
+    let command = """
+    -i \(inputURL.path) \
+    -c:v libx264 \
+    -preset fast \
+    -crf 23 \
+    -c:a aac \
+    -b:a 128k \
+    -movflags +faststart \
+    -y \(outputURL.path)
+    """
+
 
 
 
@@ -229,28 +212,24 @@ let command = """
 Change the session identifier in VideoDownloader.swift:
 
 
-#####
-let config = URLSessionConfiguration.background(
-    withIdentifier: "com.yourcompany.app.backgroundSession"
-)
-#####
 
+    let config = URLSessionConfiguration.background(
+        withIdentifier: "com.yourcompany.app.backgroundSession"
+    )
 
 
 
 **3. Adjust File Storage Paths**
 Modify file paths in VideoDownloader.swift:
 
-#####
-let tempDir = FileManager.default.temporaryDirectory
-let tempFile = tempDir.appendingPathComponent(originalURL.lastPathComponent)
-#####
+
+    let tempDir = FileManager.default.temporaryDirectory
+    let tempFile = tempDir.appendingPathComponent(originalURL.lastPathComponent)
 
 
 
 
-
----------------------------------------------------------------------------___________________________________________________________________________
+---------------------------------------
 
 
 **Requirements**
@@ -258,19 +237,17 @@ let tempFile = tempDir.appendingPathComponent(originalURL.lastPathComponent)
  > Xcode 13+
  > FFmpeg-iOS-Lam
 
-    License
+  License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-    Contributing
+  Contributing
 Pull requests are welcome! For major changes, please open an issue first to discuss what you'd like to change.
 
-    Credits
+  Credits
 FFmpeg-iOS-Lam for the FFmpeg framework.
 
 Apple’s URLSession and Combine frameworks for background downloads and reactive programming.
 
 
-
-              Enjoy seamless video downloads and conversions! 🚀
-
-                                ~ e.ias
+**Enjoy seamless video downloads and conversions! 🚀**
+~ e.ias
