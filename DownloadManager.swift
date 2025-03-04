@@ -4,10 +4,11 @@ class DownloadManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     func startDownload(url: URL) {
-        let task = VideoDownloader.shared.downloadHLSStream(url: url) { result in
+        let task = VideoDownloader.shared.downloadVideo(url: url) { result in
             switch result {
-            case .success(let convertedURL):
-                self.saveToPhotoLibrary(convertedURL)
+            case .success(let outputURL):
+                print("Download completed: \(outputURL)")
+                self.saveToPhotoLibrary(outputURL)
             case .failure(let error):
                 print("Download failed: \(error.localizedDescription)")
             }
