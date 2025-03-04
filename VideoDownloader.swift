@@ -14,7 +14,7 @@ class VideoDownloader: NSObject, URLSessionDownloadDelegate {
     
     private var activeDownloads: [Int: (URL, (Result<URL, Error>) -> Void)] = [:]
     
-    func downloadHLSStream(url: URL, completion: @escaping (Result<URL, Error>) -> Void) -> URLSessionDownloadTask {
+    func downloadVideo(url: URL, completion: @escaping (Result<URL, Error>) -> Void) -> URLSessionDownloadTask {
         let task = backgroundSession.downloadTask(with: url)
         activeDownloads[task.taskIdentifier] = (url, completion)
         task.resume()
@@ -31,9 +31,21 @@ class VideoDownloader: NSObject, URLSessionDownloadDelegate {
         
         do {
             try FileManager.default.moveItem(at: location, to: tempFile)
-            FFmpegProcessor.shared.convertToX264(inputURL: tempFile, outputURL: tempDir.appendingPathComponent("converted_\(UUID().uuidString).mp4")) { result in
-                completion(result)
-                try? FileManager.default.removeItem(at: tempFile)
+            
+            // Check if the file is an HLS stream or direct MP4
+            if originalURL.pathExtension == "m3u8" {
+                // Convert HLS to MP4
+                FFmpegProcessor.shared.convertToX264(inputURL: tempFile, outputURL: tempDir.appendingPathComponent("converted_\(UUID().uuidString).mp4")) { result in
+                    completion(result)
+                    try? FileManager.default.removeItem(at: tempFile)
+                    self.activeDownloads.removeValue(forKey: downloadTask.taskIdentifier)
+                }
+            } else {
+                // Direct MP4 download - no conversion needed
+                let destinationURL = FileManager.default.documentsDirectory
+                    .appendingPathComponent("downloaded_\(UUID().uuidString).mp4")
+                try FileManager.default.moveItem(at: tempFile, to: destinationURL)
+                completion(.success(destinationURL))
                 self.activeDownloads.removeValue(forKey: downloadTask.taskIdentifier)
             }
         } catch {
