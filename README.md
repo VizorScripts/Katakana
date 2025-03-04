@@ -185,6 +185,61 @@ ___________________________________________________________________________
 ___________________________________________________________________________
 
 
+New Feature: Direct MP4 Download Support
+The library now supports direct MP4 downloads alongside HLS streams. This eliminates the need to handle different cases based on file extensions. The system automatically detects whether the file is an HLS stream or a direct MP4 and processes it accordingly.
+
+**How It Works**
+For HLS Streams (.m3u8):
+
+Downloads the .m3u8 file.
+
+Converts it to MP4 using FFmpeg.
+
+Saves the converted file to the Documents directory.
+
+For Direct MP4 Files (.mp4):
+
+Downloads the .mp4 file directly.
+
+Moves it to the Documents directory without conversion.
+
+**> Simplified Usage**
+You no longer need to handle different cases for HLS vs. MP4 downloads. Just call:
+
+      VideoDownloader.shared.downloadVideo(url: url) { result in
+          switch result {
+          case .success(let outputURL):
+              print("Download completed: \(outputURL)")
+          case .failure(let error):
+              print("Download failed: \(error.localizedDescription)")
+          }
+      }
+
+
+
+**> Example**
+
+            let hlsURL = URL(string: "https://example.com/stream.m3u8")!
+            let mp4URL = URL(string: "https://example.com/video.mp4")!
+            
+            // Download HLS stream
+            VideoDownloader.shared.downloadVideo(url: hlsURL) { result in
+                // Handle result
+            }
+            
+            // Download direct MP4
+            VideoDownloader.shared.downloadVideo(url: mp4URL) { result in
+                // Handle result
+            }
+**Benefits**
+Automatic File Type Detection: No need to check file extensions manually.
+
+Unified API: Use the same method for both HLS and MP4 downloads.
+
+Seamless Integration: Works with existing background download and conversion logic.
+
+___________________________________________________________________________________
+
 
 
 
@@ -229,9 +284,7 @@ Modify file paths in VideoDownloader.swift:
 
 
 
-
 ---------------------------------------
-
 
 **Requirements**
  > iOS 14+
