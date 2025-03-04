@@ -1,7 +1,8 @@
-# Katakana (スカイダウンローダー)
-**Video Downloader & Converter for iOS**
+# Sukai is derived from Sukaidaunrōdā (スカイダウンローダー) meaning sky downloader!
 
-Katakana is a production-ready iOS framework for background HLS stream downloads and FFmpeg-based MP4 conversion. It features:
+**Video Downloader & Converter Module for iOS Development**
+
+Sukai is a production-ready iOS framework for background HLS stream downloads and FFmpeg-based MP4 conversion. It features:
 
 - **Resumable Downloads:** Efficiently continue downloads in the background or even after app termination.
 - **Robust File Management:** Automatically handle temporary and final files, ensuring storage remains uncluttered.
