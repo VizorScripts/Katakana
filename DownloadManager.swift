@@ -1,5 +1,6 @@
 import Combine
 import Photos
+import UniformTypeIdentifiers
 
 class DownloadManager: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
@@ -10,7 +11,7 @@ class DownloadManager: ObservableObject {
                 switch result {
                 case .success(let outputURL):
                     print("✅ Download completed: \(outputURL)")
-                    self?.saveToPhotoLibrary(outputURL)
+                    self?.askWhereToSave(outputURL)
                 case .failure(let error):
                     print("❌ Download failed: \(error.localizedDescription)")
                 }
@@ -27,6 +28,29 @@ class DownloadManager: ObservableObject {
             .store(in: &cancellables)
     }
 
+    /// Ask user where they want to save the file: Photos or Files
+    private func askWhereToSave(_ url: URL) {
+        let alert = UIAlertController(title: "Save Video", message: "Where would you like to save the video?", preferredStyle: .actionSheet)
+
+        alert.addAction(UIAlertAction(title: "Save to Photos", style: .default) { _ in
+            self.saveToPhotoLibrary(url)
+        })
+
+        alert.addAction(UIAlertAction(title: "Save to Files", style: .default) { _ in
+            self.saveToFiles(url)
+        })
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        // Show the alert (Make sure this runs on the main thread)
+        DispatchQueue.main.async {
+            if let topController = UIApplication.shared.windows.first?.rootViewController {
+                topController.present(alert, animated: true)
+            }
+        }
+    }
+
+    /// Save to Photos app
     private func saveToPhotoLibrary(_ url: URL) {
         PHPhotoLibrary.shared().performChanges {
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: url)
@@ -41,8 +65,16 @@ class DownloadManager: ObservableObject {
         }
     }
 
+    /// Save to Files app with a user-selected location
+    private func saveToFiles(_ url: URL) {
+        let documentPicker = UIDocumentPickerViewController(forExporting: [url])
+        documentPicker.delegate = UIApplication.shared.windows.first?.rootViewController as? UIDocumentPickerDelegate
+        DispatchQueue.main.async {
+            UIApplication.shared.windows.first?.rootViewController?.present(documentPicker, animated: true)
+        }
+    }
+
     private func updateProgress(_ progress: Double) {
         print("📥 Download progress: \(Int(progress * 100))%")
-        // Add UI updates here if needed
     }
 }
